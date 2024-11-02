@@ -451,3 +451,66 @@ You don't need to hurry – think twice and keep Python's MRO in mind!
 
 Yes, you're right. The invocation will activate the m_middle() method, which comes from the Middle_Left class. The explanation is simple: the class is listed before Middle_Right on the Bottom class's inheritance list. If you want to make sure that there’s no doubt about it, try to swap these two classes on the list and check the results.
 """
+
+
+
+
+# TODO: QUIZ
+
+class Dog:
+    kennel = 0 # | Class variable
+    def __init__(self, breed):
+        self.breed = breed
+        Dog.kennel += 1
+    def __str__(self):
+        return self.breed + " says: Woof!"
+
+
+class SheepDog(Dog):
+    def __str__(self):
+        return super().__str__() + " Don't run away, Little Lamb!"
+
+
+class GuardDog(Dog):
+    def __str__(self):
+        return super().__str__() + " Stay where you are, Mister Intruder!"
+
+
+rocky = SheepDog("Collie")
+luna = GuardDog("Dobermann")
+
+
+# - Now answer the question 1-4.
+
+""" 
+Question 1: The declaration of the Snake class is given below. Enrich the class with a method named increment(), adding 1 to the __victims property.
+"""
+
+print(rocky) # ? Collie says: Woof! Don't run away, Little Lamb!
+print(luna) # ? Dobermann says: Woof! Stay where you are, Mister Intruder!
+
+
+
+""" 
+Question 2: What is the expected output of the following piece of code?
+"""
+
+print(issubclass(SheepDog, Dog), issubclass(SheepDog, GuardDog)) # ? True False
+print(isinstance(rocky, GuardDog), isinstance(luna, GuardDog)) # ? False True
+
+
+""" 
+Question 3: What is the expected output of the following piece of code?
+"""
+
+print(luna is luna, rocky is luna) # ? True False
+print(rocky.kennel) # ? 2 -> The kennel is a class variable, so it's shared by all instances of the class.
+
+
+""" 
+Question 4: Define a SheepDog's subclass named LowlandDog, and equip it with an __str__() method overriding an inherited method of the same name. The new dog's __str__() method should return the string "Woof! I don't like mountains!".
+"""
+
+class LowlandDog(SheepDog):
+	def __str__(self):
+		return Dog.__str__(self) + " I don't like mountains!"
