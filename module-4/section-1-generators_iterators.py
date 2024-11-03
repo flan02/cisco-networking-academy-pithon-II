@@ -273,3 +273,282 @@ print() # - 1 0 1 0 1 0 1 0 1 0
 
 !In the second loop, there is no list at all, there are only subsequent values produced by the generator, one by one.
 """
+
+
+
+# $ The lambda function
+""" 
+ Programmers use the lambda function to simplify the code, to make it clearer and easier to understand.
+"""
+
+#- A lambda function is a function without a name (you can also call it an anonymous function)
+
+# TODO: --> lambda parameters: expression
+two = lambda: 2 # ? always returns 2
+sqr = lambda x: x * x
+pwr = lambda x, y: x ** y
+
+for a in range(-2, 3): # What does these parameters do actually? # - 2 1 0 1 2
+    print(sqr(a), end=" ") # - 4 1 0 1 4
+    print(pwr(a, two())) # - 4 1 0 1 4
+
+
+
+# $ How to use lambda functions and what for?
+
+def print_function(args, fun):
+    for x in args:
+        print('f(', x,')=', fun(x), sep='')
+
+
+def poly(x):
+    return 2 * x**2 - 4 * x + 2
+
+
+print_function([x for x in range(-2, 3)], poly) # - f(-2)=18 f(-1)=8 f(0)=2 f(1)=0 f(2)=2
+
+""" 
+Can we avoid defining the poly() function, as we're not going to use it more than once? Yes, we can. This is the benefit a lambda can bring
+"""
+
+# ! Look at the example below. Can you see the difference?
+
+def print_function(args, fun):
+    for x in args:
+        print('f(', x,')=', fun(x), sep='')
+ 
+# ? The code has become shorter, clearer, and more legible.
+print_function([x for x in range(-2, 3)], lambda x: 2 * x**2 - 4 * x + 2) # - f(-2)=18 f(-1)=8 f(0)=2 f(1)=0 f(2)=2
+
+
+
+# $ Lambdas and the map() function
+
+# In the simplest of all possible cases, the map() function:
+# i.e. -> map(function, list) # ? takes two arguments, a function and a list.
+
+""" 
+The above description is extremely simplified, as:
+
+the second map() argument may be any entity that can be iterated (e.g., a tuple, or just a generator).
+map() can accept more than two arguments.
+"""
+
+
+# TODO: You can use the resulting iterator in a loop, or convert it into a list using list() function.
+
+list_1 = [x for x in range(5)] # - [0, 1, 2, 3, 4]
+list_2 = list(map(lambda x: 2 ** x, list_1)) # - [1, 2, 4, 8, 16] -> list form
+print(list_2)  # - [1, 2, 4, 8, 16]
+
+for x in map(lambda x: x * x, list_2): # - 1 4 16 64 256 -> powers of 2
+    print(x, end=' ')
+print() # - 1 4 16 64 256
+
+
+# ! Try to imagine the same code without lambdas. Would it be any better? It's unlikely.
+
+
+
+# $ Lambdas and the filter() function
+
+""" 
+Another Python function which can be significantly beautified by the application of a lambda is filter().
+
+It expects the same kind of arguments as map(), but does something different, it filters its second argument while being guided by directions flowing from the function specified as the first argument (the function is invoked for each list element, just like in map()).
+
+The elements which return True from the function pass the filter, the others are rejected.
+"""
+
+from random import seed, randint
+
+seed() # - seed() function initializes the random number generator
+data = [randint(-10,10) for x in range(5)] 
+filtered = list(filter(lambda x: x > 0 and x % 2 == 0, data)) 
+
+print(data) # - [-4, 6, -5, 4, 6]
+print(filtered) # - [4, 6]
+
+
+
+# $ A brief look at closures
+""" 
+Let's start with a definition: closure is a technique which allows the storing of values in spite of the fact that the context in which they have been created does not exist anymore. Intricate? A bit.
+"""
+
+def outer(par):
+    loc = par
+ 
+ 
+var = 1
+outer(var)
+
+try: # ! Any of these values can be accessed from the outside.
+    print(par)
+    print(loc)
+except NameError as e:
+    print(e)
+
+
+# - Let's modified the code significantly
+def outer(par):
+    loc = par
+
+    def inner(): 
+        return loc
+    return inner
+
+
+var = 1
+# | A closure has to be invoked in exactly the same way in which it has been declared.
+fun = outer(var)
+print(fun()) # - 1
+
+
+""" 
+Now look at the code in the editor. It is fully possible to declare a closure equipped with an arbitrary number of parameters, e.g., one, just like the power() function.
+"""
+
+def make_closure(par):
+    loc = par 
+
+    def power(p):
+        return p ** loc 
+    return power 
+
+
+fsqr = make_closure(2) 
+fcub = make_closure(3)
+
+for i in range(5): # ? 0 1 2 3 4
+    print(i, fsqr(i), fcub(i))  
+
+""" ... response
+0 0 0 
+1 1 1 
+2 4 8 
+3 9 27 
+4 16 64
+"""    
+
+
+
+
+# $ Section Summary
+
+""" 
+1. An iterator is an object of a class providing at least two methods (not counting the constructor):
+
+__iter__() is invoked once when the iterator is created and returns the iterator's object itself;
+__next__() is invoked to provide the next iteration's value and raises the StopIteration exception when the iteration comes to an end.
+
+
+2. The yield statement can be used only inside functions. The yield statement suspends function execution and causes the function to return the yield's argument as a result. Such a function cannot be invoked in a regular way – its only purpose is to be used as a generator (i.e. in a context that requires a series of values, like a for loop).
+"""
+
+
+# - 3. A conditional expression is an expression built using the if-else operator. For example:
+print(True if 0 >= 0 else False) # ? True
+
+
+# - 4. A lambda function is a tool for creating anonymous functions. For example:
+def foo(x, f):
+    return f(x)
+
+print(foo(9, lambda x: x ** 0.5)) # ? 3.0
+
+
+# - 5. The map(fun, list) function creates a copy of a list argument, and applies the fun function to all of its elements, returning a generator that provides the new list content element by element. For example:
+
+short_list = ['mython', 'python', 'fell', 'on', 'the', 'floor']
+new_list = list(map(lambda s: s.title(), short_list))
+print(new_list) # ? ['Mython', 'Python', 'Fell', 'On', 'The', 'Floor']
+
+
+# - 6. The filter(fun, list) function creates a copy of those list elements, which cause the fun function to return True. The function's result is a generator providing the new list content element by element. For example:
+short_list = [1, "Python", -1, "Monty"]
+new_list = list(filter(lambda s: isinstance(s, str), short_list))
+print(new_list) # ? ['Python', 'Monty']
+
+
+# - 7. A closure is a technique which allows the storing of values in spite of the fact that the context in which they have been created does not exist anymore. For example:
+def tag(tg):
+    tg2 = tg
+    tg2 = tg[0] + '/' + tg[1:]
+
+    def inner(str):
+        return tg + str + tg2
+    return inner
+
+
+b_tag = tag('<b>')
+print(b_tag('Monty Python')) # ? <b>Monty Python</b>
+
+
+
+
+# $ Secion Quiz
+
+
+""" Question 1: What is the expected output of the following code? """
+class Vowels:
+    def __init__(self):
+        self.vow = "aeiouy " # ! Yes, we know that y is not always considered a vowel.
+        self.pos = 0 # The position of the next vowel to be returned.
+ 
+    def __iter__(self): # ? The method returns the object itself.
+        return self
+ 
+    def __next__(self): # ? The method returns the next vowel.
+        if self.pos == len(self.vow): # ? If there are no more vowels, the method raises the StopIteration exception.
+            raise StopIteration 
+        self.pos += 1 # ? The method increments the position of the next vowel.
+        return self.vow[self.pos - 1] # ? The method returns the next vowel.
+ 
+ 
+vowels = Vowels() 
+for v in vowels: # ? The loop iterates through the vowels.
+    print(v, end=' ') # | a e i o u y
+
+
+""" 
+Question 2: Write a lambda function, setting the least significant bit of its integer argument, and apply it to the map() function to produce the string 1 3 3 5 on the console
+"""
+# ! even: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
+# ! odd / uneven: 1, 3, 5, 7, 9, 11, 13, 15, 17, 19
+
+any_list = [1, 2, 3, 4]
+# Complete the line here.
+even_list = list(map(lambda x: x | 1, any_list)) 
+print(even_list) # ? [1, 3, 3, 5]
+
+
+"""
+Question 3: What is the expected output of the following code? 
+"""
+def replace_spaces(replacement='*'): 
+    def new_replacement(text):
+        return text.replace(' ', replacement)
+    return new_replacement 
+ 
+ 
+stars = replace_spaces() # ? The function is invoked without arguments.
+print(stars("And Now for Something Completely Different")) # | And*Now*for*Something*Completely*Different
+
+
+# ! NOTE
+# ? https://peps.python.org/pep-0008/#programming-recommendations
+
+""" 
+the Style Guide for Python Code, recommends that lambdas should not be assigned to variables, but rather they should be defined as functions.
+
+This means that it is better to use a def statement, and avoid using an assignment statement that binds a lambda expression to an identifer. Analyze the code below:
+"""
+
+# - Recommended:
+def f(x): return 3*x
+
+
+# ! Not recommended:
+f = lambda x: 3*x
+
